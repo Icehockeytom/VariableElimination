@@ -11,6 +11,7 @@ public class ProbRow {
 	private ArrayList<String> VALUES;
 	private Variable NODE;
 	private ArrayList<Variable> PARENTS;
+        private ArrayList<Variable> HEADERS;
 
 	/**
 	 * Constructor
@@ -29,6 +30,12 @@ public class ProbRow {
         public ProbRow(double prob, ArrayList<String> values) {
             this.PROB = prob;
             this.VALUES = values;
+        }
+        
+        public ProbRow(double prob, ArrayList<String> values, ArrayList<Variable> headers) {
+            this.PROB = prob;
+            this.VALUES = values;
+            this.HEADERS = headers;
         }
 
 	/**
@@ -58,6 +65,10 @@ public class ProbRow {
 	public Variable getNode() {
 		return NODE;
 	}
+        
+        public ArrayList<Variable> getHeaders() {
+            return this.HEADERS;
+        }
 	
 	/**
 	 * Getter of the values.
@@ -90,26 +101,16 @@ public class ProbRow {
 	}
 
     public ProbRow multiply(ProbRow otherRow, ArrayList<Variable> headers, ArrayList<Variable> otherHeaders) {
-        ArrayList<Variable> newParents = new ArrayList();
-        ArrayList<Integer> columnsToBeRemoved = new ArrayList();
-        
+        ArrayList<Variable> newHeaders = new ArrayList();
         double newProb = this.PROB * otherRow.PROB;
-
         /**
          * Check if some headers appear more than one time
          * and if so, store the column of the header
          */
-        newParents.addAll(headers);
-        for (Variable parent : otherHeaders) {
-            if (!(newParents.contains(parent))) {
-                newParents.add(parent);
-            }
-            else if (newParents.contains(parent)) {
-                int column = headers.indexOf(parent);
-                columnsToBeRemoved.add(column);
-            } 
-            else if (!newParents.contains(this.getNode())) {
-                newParents.add(this.getNode());
+        newHeaders.addAll(headers);
+        for (Variable header : otherHeaders) {
+            if (!(newHeaders.contains(header))) {
+                newHeaders.add(header);
             }
         }
         
@@ -117,13 +118,19 @@ public class ProbRow {
          * Initialize all the values for the new table
          * and eliminate the columns that were superfluous
          */
-        ArrayList<String> newValues = new ArrayList(otherRow.getValues());
-        for (int column : columnsToBeRemoved) {
-            newValues.remove(column);
+        ArrayList<String> newValues = new ArrayList();
+        for (Variable v : newHeaders) {
+            String val;
+            if (headers.contains(v) && !otherHeaders.contains(v)) {
+                val = this.getValues().get(headers.indexOf(v));
+            } else if (otherHeaders.contains(v) && !headers.contains(v)) {
+                val = otherRow.getValues().get(otherHeaders.indexOf(v));
+            } else {
+                val = this.getValues().get(headers.indexOf(v));
+            }
+            newValues.add(val);
         }
-        newValues.addAll(this.VALUES);
-
-        return new ProbRow(newProb, newValues);
+        return new ProbRow(newProb, newValues, newHeaders);
     }
     
     public ProbRow addRow (ProbRow otherRow) {

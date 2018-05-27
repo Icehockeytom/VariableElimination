@@ -1,26 +1,28 @@
 package varelim;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * @author Dennis den Hollander
- * @author Tom Kamp
  */
 public class Table2
 {
 
-    private final Table TABLE;
-    private final ArrayList<Variable> HEADERS = new ArrayList();
+    private Table TABLE;
+    private ArrayList<Variable> HEADERS = new ArrayList();
     private BufferedWriter writer;
 
     public Table2(Table table, BufferedWriter writer)
     {
-        this.writer = writer;
         this.TABLE = table;
-        this.HEADERS.addAll(table.getParents());
-        this.HEADERS.add(table.getNode());
+        this.HEADERS = table.getHeaders();
+        this.writer = writer;
+    }
+
+    public Table getTableProp()
+    {
+        return this.TABLE;
     }
 
     public ArrayList<Variable> getHeaders()
@@ -33,10 +35,9 @@ public class Table2
         return this.TABLE.getTable();
     }
 
-    public Table2 multiply(Table2 other) throws IOException
+    public Table2 multiply(Table2 other)
     {
         ArrayList<ProbRow> newRows = new ArrayList();
-        ArrayList<Variable> newHeaders = (ArrayList<Variable>) this.HEADERS.clone();
         for (ProbRow row1 : this.getTable())
         {
             for (ProbRow row2 : other.getTable())
@@ -52,25 +53,14 @@ public class Table2
                             if (thisVal.equals(otherVal))
                             {
                                 newRows.add(row1.multiply(row2, this.HEADERS, other.HEADERS));
-//                                writer.newLine();
-                                
                             }
                         }
                     }
                 }
             }
         }
-
-        /**
-         * Filter node and parent back in table
-         */
-        Variable node = newHeaders.get(newHeaders.size() - 1);
-        ArrayList<Variable> parents = new ArrayList();
-        for (int i = 0; i < newHeaders.size() - 1; i++)
-        {
-            parents.add(newHeaders.get(i));
-        }
-        return new Table2(new Table(newRows, node, parents), writer);
+        ArrayList<Variable> newHeaders = newRows.get(0).getHeaders();
+        return new Table2(new Table(newRows, newHeaders), writer);
     }
 
     public Table2 eliminate(Variable variable)
@@ -109,6 +99,11 @@ public class Table2
                 }
             }
         }
+        if (newRows.size() < 1)
+        {
+            return this;
+        }
+        System.out.println();
         return new Table2(new Table(newRows, this.HEADERS), writer);
     }
 }

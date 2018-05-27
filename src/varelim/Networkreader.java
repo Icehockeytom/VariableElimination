@@ -41,8 +41,8 @@ public class Networkreader
      */
     public Networkreader(String file, BufferedWriter writer)
     {
-        this.writer = writer;
         BufferedReader br = null;
+        this.writer = writer;
         try
         {
             String cur; // Keeping track of current line observed by BufferedReader
@@ -308,9 +308,9 @@ public class Networkreader
     /**
      * Asks for a query from the user.
      */
-    public void askForQuery()
+    public void askForQuery() throws IOException
     {
-        System.out.println("\nWhich variable(s) do you want to query? Please enter in the number of the variable.");
+        System.out.println("\nWhich variable do you want to query? Please enter in the number of the variable.");
         for (int i = 0; i < Vs.size(); i++)
         {
             System.out.println("Variable " + i + ": " + Vs.get(i).getName());
@@ -324,10 +324,15 @@ public class Networkreader
         }
         try
         {
+            writer.write("Queried variable:");
+            writer.newLine();
             int queriedVar = Integer.parseInt(line);
             if (queriedVar >= 0 && queriedVar < Vs.size())
             {
                 query = Vs.get(queriedVar);
+                writer.write(Vs.get(queriedVar).getName());
+                writer.newLine();
+                writer.newLine();
             }
             else
             {
@@ -381,6 +386,8 @@ public class Networkreader
             }
             else
             {
+                writer.write("Observed variables:");
+                writer.newLine();
                 while (line.contains(";"))
                 { // Multiple observed variables
                     try
@@ -388,10 +395,9 @@ public class Networkreader
                         int queriedVar = Integer.parseInt(line.substring(0, line.indexOf(",")));
                         String bool = line.substring(line.indexOf(",") + 1, line.indexOf(";"));
                         changeVariableToObserved(queriedVar, bool);
-                        writer.write("Variable: " + queriedVar + "; Evidence: " + bool + "\n");
+                        writer.write("Variable: " + Vs.get(queriedVar).getName() + "; Evidence: " + bool);
                         writer.newLine();
-                        line = line.substring(line.indexOf(";") + 1);
-                        // Continue
+                        line = line.substring(line.indexOf(";") + 1); // Continue
                         // with
                         // next
                         // observed
@@ -412,7 +418,7 @@ public class Networkreader
 
                         int queriedVar = Integer.parseInt(line.substring(0, line.indexOf(",")));
                         String bool = line.substring(line.indexOf(",") + 1);
-                        writer.write("Variable: " + queriedVar + "; Evidence: " + bool);
+                        writer.write("Variable: " + Vs.get(queriedVar).getName() + "; Evidence: " + bool);
                         writer.newLine();
                         changeVariableToObserved(queriedVar, bool);
                     }
@@ -425,6 +431,7 @@ public class Networkreader
                 }
             }
         }
+        writer.newLine();
     }
 
     /**
@@ -490,7 +497,7 @@ public class Networkreader
             {
                 for (int j = 0; j < Vs.get(i).getParents().size(); j++)
                 {
-                    System.out.println(Ps.get(i).get(0).getNode().getName() + " has parent "
+                    System.out.println(Ps.get(i).get(0).getNode().getName() + " has header "
                             + Vs.get(i).getParents().get(j).getName()); // Printing
                     // the
                     // probabilities.
@@ -508,6 +515,22 @@ public class Networkreader
             }
             System.out.println();
         }
+    }
+
+    public void printTable(Table Ps) throws IOException
+    {
+        //for (int i = 0; i < Ps.size(); i++)
+        //{
+        //Table probs = Ps.get(i);
+        for (int l = 0; l < Ps.size(); l++)
+        {
+            System.out.println(Ps.get(l));
+            writer.write(Ps.get(l).toString());
+            writer.newLine();
+          
+        }
+        //System.out.println();
+        //}
     }
 
     /**

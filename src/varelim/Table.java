@@ -13,6 +13,7 @@ public class Table {
 	private ArrayList<ProbRow> TABLE;
 	private Variable NODE;
 	private ArrayList<Variable> PARENTS;
+        private ArrayList<Variable> HEADERS;
 	
 	/**
 	 * Constructor of the class.
@@ -26,10 +27,11 @@ public class Table {
 		this.PARENTS = parents;
 	}
         
-        public Table(ArrayList<ProbRow> table, ArrayList<Variable> parents) {
+        public Table(ArrayList<ProbRow> table, ArrayList<Variable> headers) {
             this.TABLE = table;
-            this.PARENTS = parents;
+            this.HEADERS = headers;
         }
+       
 
 	/**
 	 * Getter of the table made out of ProbRows
@@ -54,6 +56,10 @@ public class Table {
 	public ArrayList<Variable> getParents() {
 		return PARENTS;
 	}
+        
+        public ArrayList<Variable> getHeaders() {
+            return HEADERS;
+        }
 
 	/**
 	  * Gets the i'th element from the ArrayList of ProbRows
