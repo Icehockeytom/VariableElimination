@@ -69,9 +69,13 @@ public class Main
         t.eliminate(Vs.get(0));
         t = t.merge();
         System.out.println();
+        int var = 0;
         for (ProbRow r : t.getTable())
         {
             System.out.println(r);
+            writer.newLine();
+            writer.write("Variable "+ O.get(var).getName() + ": " + r.toString());
+            var++;
         }
                 writer.close();    
     }

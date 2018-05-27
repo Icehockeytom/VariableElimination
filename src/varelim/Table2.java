@@ -52,7 +52,7 @@ public class Table2
                             if (thisVal.equals(otherVal))
                             {
                                 newRows.add(row1.multiply(row2, this.HEADERS, other.HEADERS));
-                                writer.newLine();
+//                                writer.newLine();
                                 
                             }
                         }
